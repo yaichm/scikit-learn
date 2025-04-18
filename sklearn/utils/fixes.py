@@ -88,8 +88,26 @@ def _object_dtype_isnan(X):
 
 #TODO:  remove this when minimum version of scipy >= 1.9.0
 def _yeojohnson_lambda( _neg_log_likelihood, x):
+    """
+    Estimate the optimal Yeo-Johnson transformation parameter (lambda) for the input data `x`.
 
-    x = x[~np.isnan(x)]
+    This function provides a compatibility workaround for versions of SciPy older than 1.9.0,
+    where `scipy.stats.yeojohnson` did not return the estimated lambda directly.
+
+    Parameters:
+    ----------
+    _neg_log_likelihood : callable
+        A function that computes the negative log-likelihood of the Yeo-Johnson transformation
+        for a given lambda. Used only for SciPy versions < 1.9.0.
+    x : array-like
+        Input data to estimate the Yeo-Johnson transformation parameter.
+
+    Returns:
+    -------
+    lmbda : float
+        The estimated lambda parameter for the Yeo-Johnson transformation.
+    """
+
     scipy_version = parse_version(scipy.__version__)
     min_scipy_version = "1.9.0"
     if scipy_version < parse_version(min_scipy_version):

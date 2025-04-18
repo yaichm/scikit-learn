@@ -2624,4 +2624,25 @@ def test_yeojohnson_for_different_scipy_version():
      """Check the result are the same for different scipy version"""
      # https://github.com/scikit-learn/scikit-learn/pull/27818
      pt = PowerTransformer(method="yeo-johnson").fit(X_1col)
-     assert_almost_equal(pt.lambdas_[0], 0.99999353)
+     assert_almost_equal(pt.lambdas_[0], 0.99546157)
+
+def test_power_transformer_no_warnings():
+    """Verify that PowerTransformer operates without raising any warnings on valid data."""
+    x = np.array([2003.0, 1950.0, 1997.0, 2000.0, 2009.0, 2009.0, 
+                 1980.0, 1999.0, 2007.0, 1991.0])
+
+    def _test_no_warnings(data):
+        """Internal helper to test for unexpected warnings."""
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            warnings.simplefilter("always")  # Ensure all warnings are captured
+            PowerTransformer(method="yeo-johnson", standardize=True).fit_transform(data)
+            
+            if caught_warnings:
+                warning_messages = "\n".join(str(w.message) for w in caught_warnings)
+                pytest.fail(f"Unexpected warnings were raised:\n{warning_messages}")
+
+    # [Test 1] Full dataset - Should not trigger overflow in variance calculation
+    _test_no_warnings(x.reshape(-1, 1))
+    
+    # [Test 2] Subset of data - Should not trigger overflow in power calculation  
+    _test_no_warnings(x[:5].reshape(-1, 1))

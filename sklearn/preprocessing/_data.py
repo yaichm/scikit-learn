@@ -3526,10 +3526,9 @@ class PowerTransformer(OneToOneFeatureMixin, TransformerMixin, BaseEstimator):
 
         # the computation of lambda is influenced by NaNs so we need to
         # get rid of them
-        #x = x[~np.isnan(x)]
-        # choosing bracket -2, 2 like for boxcox
-        #return optimize.brent(_neg_log_likelihood, brack=(-2, 2))
-        _yeojohnson_lambda( _neg_log_likelihood, x)
+        x = x[~np.isnan(x)]
+
+        return _yeojohnson_lambda( _neg_log_likelihood, x)
 
     def _check_input(self, X, in_fit, check_positive=False, check_shape=False):
         """Validate the input before fit and transform.
